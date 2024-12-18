@@ -1,0 +1,1 @@
+Como atualmente eu não atuo na area de programação eu achei interensante colocar a publico os exercicios que eu encontro no tiktok, instagram, faculdade ou cursos complementares para que eu consiga guardar e deixar a mostra os meus conhecimentos :D
