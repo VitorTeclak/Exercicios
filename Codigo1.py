@@ -10,13 +10,19 @@ def adicionar_produto():
     nome = input('Digite o nome do produto: ')
     qtd = int(input('Digite a quantidade: '))
     preco = float(input('Digite o preço do produto: '))
-
-    if nome in estoque:
-        estoque[nome]['quantidade'] += qtd  
+    escolha = float(input(f'Tem certeza que deseja adicionar o item {nome} no estoque ? (1.Sim / 2.Não): ')) 
+    if escolha == 1:
+        if nome in estoque:
+            estoque[nome]['quantidade'] += qtd 
+            print(f'A quantidade do produto {nome} foi atualizada') 
+        else:
+            estoque[nome] = {'quantidade': qtd, 'preço': preco}  
+            print(f"Produto '{nome}' adicionado com sucesso!")
+    elif escolha == 2:
+        print('Operação cancelada')
     else:
-        estoque[nome] = {'quantidade': qtd, 'preço': preco}  
+        print('Número inválido. Tente novamente.')
 
-    print(f"Produto '{nome}' adicionado com sucesso!")
 
 def consultar_estoque():
     clear()
@@ -27,14 +33,20 @@ def consultar_estoque():
         for nome, dados in estoque.items():
             print(f"- {nome}: {dados['quantidade']} unidades, R$ {dados['preço']:.2f} cada")
 
+
 def excluir_produto():
     clear()
     nome = input('digite o nome do produto a ser excluido: ')
-    if nome in estoque:
-        del estoque[nome]
-        print(f"O produto '{nome}' foi excluído do estoque.")
+    escolha = int(input(f'Tem certeza que deseja excluir o produto {nome}?: (1.Sim / 2.Não): '))
+    if escolha == 1:
+        if nome in estoque:
+            del estoque[nome]
+            print(f"O produto '{nome}' foi excluído do estoque.")
+    elif escolha == 2:
+        print('Operação cancelada')
     else:
         print(f"O produto '{nome}' não existe no estoque.")
+    
 
 def vender_produto():
     clear()
@@ -64,6 +76,7 @@ def vender_produto():
     else:
         print(f"Produto '{nome}' não encontrado no estoque.")
 
+
 def mostrar_total():
     clear()
     if not estoque: 
@@ -77,6 +90,7 @@ def mostrar_total():
             print(f"- {nome}: {dados['quantidade']} unidades, Preço unitário: R$ {dados['preço']:.2f}, Subtotal: R$ {subtotal:.2f}")
         
         print(f"\nO valor total do estoque é: R$ {total:.2f}")
+
 
 while True:
     clear()
@@ -103,4 +117,8 @@ while True:
     else: 
         print('digite uma opção valida')
 
+
     input('digite enter para continuar...')
+
+
+
