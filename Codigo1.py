@@ -7,10 +7,15 @@ def clear():
 
 def adicionar_produto():
     clear()
-    nome = input('Digite o nome do produto: ')
-    qtd = int(input('Digite a quantidade: '))
-    preco = float(input('Digite o preço do produto: '))
-    escolha = float(input(f'Tem certeza que deseja adicionar o item {nome} no estoque ? (1.Sim / 2.Não): ')) 
+    try:
+        nome = input('Digite o nome do produto: ')
+        qtd = int(input('Digite a quantidade: '))
+        preco = float(input('Digite o preço do produto: '))
+        escolha = int(input(f'Tem certeza que deseja adicionar o item {nome} no estoque ? (1.Sim / 2.Não): ')) 
+    except ValueError:
+        print('Erro de processamento tente novamente')
+        return
+
     if escolha == 1:
         if nome in estoque:
             estoque[nome]['quantidade'] += qtd 
@@ -119,6 +124,3 @@ while True:
 
 
     input('digite enter para continuar...')
-
-
-
