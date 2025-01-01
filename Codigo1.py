@@ -105,22 +105,24 @@ while True:
     print('4. vender produto')
     print('5. mostrar total')
     print('6. Sair')
-    escolha = int(input('digite a função desejada: '))
-
-    if escolha == 1:
-        adicionar_produto()
-    elif escolha == 2:
-        consultar_estoque()
-    elif escolha == 3:
-        excluir_produto()
-    elif escolha == 4:
-        vender_produto()
-    elif escolha == 5:
-        mostrar_total()
-    elif escolha == 6:
-        break
-    else: 
-        print('digite uma opção valida')
+    try:
+        escolha = int(input('digite a função desejada: '))
+        if escolha == 1:
+            adicionar_produto()
+        elif escolha == 2:
+            consultar_estoque()
+        elif escolha == 3:
+            excluir_produto()
+        elif escolha == 4:
+            vender_produto()
+        elif escolha == 5:
+            mostrar_total()
+        elif escolha == 6:
+            break
+        else: 
+            print('digite uma opção valida')
+    except ValueError:
+        print('Opção invalida')
 
 
     input('digite enter para continuar...')
