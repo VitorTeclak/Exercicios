@@ -13,11 +13,14 @@ CREATE TABLE endereco (
 CREATE TABLE veiculo (
     id_veiculo INT PRIMARY KEY AUTO_INCREMENT,
     modelo_veiculo VARCHAR(100) NOT NULL,
+    cor VARCHAR(50) NOT NULL,
     ano_producao INT NOT NULL,
     quilometragem VARCHAR(15),
     placa VARCHAR(7) UNIQUE NOT NULL,
     valor VARCHAR(15) NOT NULL,
     tipo ENUM('CARRO', 'MOTO') NOT NULL
+    id_cliente INT,
+    FOREIGN KEY (id_cliente) REFERENCES cliente(id_cliente)
 );
 
 CREATE TABLE cliente (

@@ -6,7 +6,7 @@ from entities.veiculo import veiculo
 def clear():
     os.system('cls' if os.name == 'nt' else 'clear')  
 
-print('Seja bem vindo ao sistema da concessionÃ¡ria')
+print('Seja bem vindo ao sistema da concessionariaa')
 
 while True:
 
@@ -14,9 +14,11 @@ while True:
     print('1. Adicionar Veiculo')
     print('2. Visualizar Veiculos')
     print('3. Remover Veiculo')
-    print('4. adicionar cliente')
-    print('5. Visulizar clientes')
-    print('6. Excluir cliente')
+    print('4. Vender Veiculo')
+    print('5. adicionar cliente')
+    print('6. Visulizar clientes')
+    print('7. Excluir cliente')
+    
     try:
         escolha = int(input('Digite a opção desejada: '))
     
@@ -27,10 +29,12 @@ while True:
         elif escolha ==3:
             veiculo.remover_veiculo()
         elif escolha ==4:
-            Cliente.inserir_cliente()
+            veiculo.vender_veiculo()
         elif escolha ==5:
-            Cliente.visualizar_clientes()
+            Cliente.inserir_cliente()
         elif escolha ==6:
+            Cliente.visualizar_clientes()
+        elif escolha ==7:
             Cliente.excluir_cliente()
         else:
             print("Opção invalida. Tente novamente")
