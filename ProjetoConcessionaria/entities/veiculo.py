@@ -50,7 +50,7 @@ class veiculo:
                     except ValueError:
                         print("Dados do veiculo inválidos. Tente novamente.")
 
-                    sql_veiculo = "INSERT INTO veiculo (tipo, modelo_veiculo, cor, ano_producao, quilometragem, placa, valor) VALUES (%s, %s, %s, %s, %s, %s)"
+                    sql_veiculo = "INSERT INTO veiculo (tipo, modelo_veiculo, cor, ano_producao, quilometragem, placa, valor) VALUES (%s, %s, %s, %s, %s, %s, %s)"
                     valores_veiculo = (tipo, modelo_veiculo, cor,  ano, quilometragem, placa, valor_str)
                     cursor.execute(sql_veiculo, valores_veiculo)
 
@@ -82,7 +82,7 @@ class veiculo:
                 
                 resultados = cursor.fetchall()
 
-                print("ID | Modelo | Ano | Quilometragem | Placa | Valor | Tipo")
+                print("ID | Modelo | Ano | Quilometragem | Placa | Valor | Tipo | ID_CLIENTE_COMPRADOR")
                 print("-" * 70)
                 for linha in resultados:
                     print(linha) 
@@ -147,12 +147,12 @@ class veiculo:
         database="concessionaria")
         try:
             with connection.cursor() as cursor:
-                cursor.execute("SELECT modelo, placa, tipo FROM veiculo")
-                resultados = cursor.fetchall()
+                cursor.execute("SELECT id_veiculo, modelo_veiculo, placa, tipo FROM veiculo")
+                resultados_veiculos = cursor.fetchall()
 
                 print("ID | MODELO | PLACA | TIPO")
                 print("-" * 70)
-                for linha in resultados:
+                for linha in resultados_veiculos:
                     print(linha)
                 try:
                     id_veiculo = int(input("Digite o numero ID do veiculo que deseja vender: "))
@@ -160,14 +160,18 @@ class veiculo:
                     print("Id veiculo invalido.")
                     
                 cursor.execute("SELECT id_cliente, nome, email FROM cliente")
+                resultados_cliente = cursor.fetchall()
                 print("ID CLIENTE | NOME| EMAIL")
+                print("-" * 70)
+                for linha in resultados_cliente:
+                    print(linha)
                 try: 
                     id_cliente = int(input("Digite o id no cliente que ira comprar o carro: "))
                 except ValueError:
                     print("Id invalido.")
 
                 try:
-                    escolha = input(f"Tem certeza que deseja vender o veiculo, ID: {id} para o cliente ID: {id_cliente} (S/N)").upper()
+                    escolha = input(f"Tem certeza que deseja vender o veiculo, ID: {id_veiculo} para o cliente ID: {id_cliente} (S/N)").upper()
                     if escolha == ("S"):
                         sql_upt = "UPDATE veiculo SET id_cliente = %s WHERE id_veiculo = %s;"
                         valores_upt = (id_cliente, id_veiculo)

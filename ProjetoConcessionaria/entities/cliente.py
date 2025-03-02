@@ -87,11 +87,12 @@ class Cliente:
 
         try:
             with connection.cursor() as cursor:
-                cursor.execute("SELECT * FROM cliente")
+                cursor.execute("""SELECT c.id_cliente, c.nome, c.cpf, c.idade, c.telefone, c.email, e.rua, e.numero, e.cep FROM cliente c
+                INNER JOIN endereco e ON c.id_endereco = e.id_endereco;""")
                 
                 resultados = cursor.fetchall()
 
-                print("ID | Nome | CPF | Idade | Telefone | Email | ID Endereço")
+                print("ID | Nome | CPF | Idade | Telefone | Email | RUA | NUMERO| CEP")
                 print("-" * 70)
                 for linha in resultados:
                     print(linha) 
