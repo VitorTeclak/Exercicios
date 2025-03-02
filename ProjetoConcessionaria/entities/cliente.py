@@ -27,7 +27,7 @@ class Cliente:
             connection = pymysql.connect(
                 host="localhost",
                 user="root",
-                password="1421",
+                password="Senha",
                 database="concessionaria",
             )
 
@@ -81,7 +81,7 @@ class Cliente:
         connection = pymysql.connect(
         host="localhost",
         user="root",
-        password="1421",
+        password="Senha",
         database="concessionaria"
 )
 
@@ -109,7 +109,7 @@ class Cliente:
         connection = pymysql.connect(
         host="localhost",
         user="root",
-        password="1421",
+        password="Senha",
         database="concessionaria"
 )
 
