@@ -11,13 +11,14 @@ print('Seja bem vindo ao sistema da concessionariaa')
 while True:
 
     clear()
-    print('1. Adicionar Veiculo')
+    print('1. Adionar Veiculo')
     print('2. Visualizar Veiculos')
     print('3. Remover Veiculo')
     print('4. Vender Veiculo')
-    print('5. adicionar cliente')
-    print('6. Visulizar clientes')
-    print('7. Excluir cliente')
+    print('5. Editar dados do Veiculo')
+    print('6. adicionar cliente')
+    print('7. Visulizar clientes')
+    print('8. Excluir cliente')
     
     try:
         escolha = int(input('Digite a opção desejada: '))
@@ -31,10 +32,12 @@ while True:
         elif escolha ==4:
             veiculo.vender_veiculo()
         elif escolha ==5:
-            Cliente.inserir_cliente()
+            veiculo.editar_dados_veiculo()
         elif escolha ==6:
-            Cliente.visualizar_clientes()
+            Cliente.inserir_cliente()
         elif escolha ==7:
+            Cliente.visualizar_clientes()
+        elif escolha ==8:
             Cliente.excluir_cliente()
         else:
             print("Opção invalida. Tente novamente")

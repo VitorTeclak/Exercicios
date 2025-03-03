@@ -21,7 +21,7 @@ class veiculo:
             connection = pymysql.connect(
                 host="localhost",
                 user="root",
-                password="Senha",
+                password="senha",
                 database="concessionaria",
             )
 
@@ -72,7 +72,7 @@ class veiculo:
         connection = pymysql.connect(
         host="localhost",
         user="root",
-        password="Senha",
+        password="senha",
         database="concessionaria"
 )
 
@@ -99,7 +99,7 @@ class veiculo:
         connection = pymysql.connect(
         host="localhost",
         user="root",
-        password="Senha",
+        password="senha",
         database="concessionaria"
 )
 
@@ -143,7 +143,7 @@ class veiculo:
         connection = pymysql.connect(
         host="localhost",
         user="root",
-        password="Senha",
+        password="senha",
         database="concessionaria")
         try:
             with connection.cursor() as cursor:
@@ -190,4 +190,52 @@ class veiculo:
 
         except Exception as e:
             print("Erro ao buscar os dados:", e)
+
+    @staticmethod
+    def editar_dados_veiculo():
+        clear()
+        
+        connection = pymysql.connect(
+        host="localhost",
+        user="root",
+        password="senha",
+        database="concessionaria")
+        try:
+            with connection.cursor() as cursor:
+                cursor.execute("SELECT id_veiculo, modelo_veiculo, cor, ano_producao, placa, valor, tipo FROM veiculo")
+                resultados_cliente = cursor.fetchall()
+                print("ID_VEICULO | MODELO_VEICULO | COR | ANO_PRODUCAO | PLACA | VALOR | TIPO")
+                print("-" * 70)
+                for linha in resultados_cliente:
+                    print(linha)    
+                try:
+                    id_veiculo = int(input("Digite o ID do veiculo que deseja editar: "))
+                except ValueError:
+                    print("Id invalido.")
+                try:
+                    print("MODELO_VEICULO | COR | ANO_PRODUCAO | QUIOMETRAGEM | PLACA | VALOR | TIPO")
+                    print("OBS: Digite exatamente igual.")
+                    coluna_a_editar = input("Digite a coluna que deseja editar: ").lower()
+                    colunas_validas = ["modelo_veiculo", "cor", "ano_producao", "quilometragem", "placa", "valor", "tipo"]
+                    if coluna_a_editar not in colunas_validas:
+                        print("Opção digitada não esta valida no banco de dados.")
+                    if coluna_a_editar == "ano_producao":
+                        novo_valor_coluna = int(input("Digite a coluna que deseja editar: "))
+                    else:
+                        novo_valor_coluna = input("Digite o novo valor: ").upper()
+                    
+                except ValueError:
+                    print("Valores invalidos tente novamente.")
+        
+                sql_upt = "UPDATE veiculo SET {} = %s WHERE id_veiculo = %s".format(coluna_a_editar)
+                valores_upt = (novo_valor_coluna, id_veiculo)
+                cursor.execute(sql_upt, valores_upt)
+                connection.commit()
+                print("Valores alterados com sucesso. ")
+
+        except Exception as e:
+            print("Erro ao buscar os dados:", e)
+        finally:
+            connection.close()  
+    
     
