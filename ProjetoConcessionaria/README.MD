@@ -33,7 +33,7 @@ Dentro da classe Veiculo foram criadas as seguintes funções.
 </ul>
 
 <h3>CLASSE CLIENTE</h3>
-A classe Cliente foi criada para conter os principais dados de um cliente como nome, telefone, email, cpf, idade e endereço, para armazenas os dados do endereço foi criada uma sub-classe sendo ativada automaticamente assim que inicia a criação da classe cliente.
+A classe Cliente foi criada para conter os principais dados de um cliente como ("nome, telefone, email, cpf, idade e endereço") para armazenas os dados do endereço foi criada uma sub-classe sendo ativada automaticamente assim que inicia a criação da classe cliente.
 Dentro da classe Cliente foram criadas as seguintes funções.
 <ul>
 <li>Adicionar Clientes.</li>
