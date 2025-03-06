@@ -21,7 +21,7 @@ class veiculo:
             connection = pymysql.connect(
                 host="localhost",
                 user="root",
-                password="senha",
+                password="1421",
                 database="concessionaria",
             )
 
@@ -72,7 +72,7 @@ class veiculo:
         connection = pymysql.connect(
         host="localhost",
         user="root",
-        password="senha",
+        password="1421",
         database="concessionaria"
 )
 
@@ -99,7 +99,7 @@ class veiculo:
         connection = pymysql.connect(
         host="localhost",
         user="root",
-        password="senha",
+        password="1421",
         database="concessionaria"
 )
 
@@ -143,7 +143,7 @@ class veiculo:
         connection = pymysql.connect(
         host="localhost",
         user="root",
-        password="senha",
+        password="1421",
         database="concessionaria")
         try:
             with connection.cursor() as cursor:
@@ -198,7 +198,7 @@ class veiculo:
         connection = pymysql.connect(
         host="localhost",
         user="root",
-        password="senha",
+        password="1421",
         database="concessionaria")
         try:
             with connection.cursor() as cursor:

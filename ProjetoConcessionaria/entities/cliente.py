@@ -27,7 +27,7 @@ class Cliente:
             connection = pymysql.connect(
                 host="localhost",
                 user="root",
-                password="senha",
+                password="1421",
                 database="concessionaria",
             )
 
@@ -81,7 +81,7 @@ class Cliente:
         connection = pymysql.connect(
         host="localhost",
         user="root",
-        password="senha",
+        password="1421",
         database="concessionaria"
 )
 
@@ -109,7 +109,7 @@ class Cliente:
         connection = pymysql.connect(
         host="localhost",
         user="root",
-        password="senha",
+        password="1421",
         database="concessionaria"
 )
 
@@ -146,6 +146,49 @@ class Cliente:
 
         finally:
             connection.close()  
+
+    @staticmethod
+    def editar_cliente():
+        connection = pymysql.connect(
+        host="localhost",
+        user="root",
+        password="1421",
+        database="concessionaria")
+        try:
+            with connection.cursor() as cursor:
+                cursor.execute("SELECT id_cliente, nome, cpf, idade, telefone, email FROM cliente")
+                resultados_cliente = cursor.fetchall()
+                print("ID CLIENTE | NOME | CPF | IDADE | TELEFONE | EMAIL")
+                print("-" * 70)
+                for linha in resultados_cliente:
+                    print(linha)    
+                try:
+                    id_cliente = int(input("Digite o ID do veiculo que deseja editar: "))
+                except ValueError:
+                    print("Id invalido.")
+                try:
+                    print("NOME | CPF | IDADE | TELEFONE | EMAIL")
+                    print("OBS: Digite exatamente igual.")
+                    coluna_a_editar = input("Digite a coluna que deseja editar: ").lower()
+                    colunas_validas = ["id_cliente", "nome", "cpf", "idade", "telefone", "email"]
+                    if coluna_a_editar not in colunas_validas:
+                        print("Opção digitada não esta valida no banco de dados.")
+                    novo_valor_coluna = input("Digite o novo valor: ").upper()
+                    
+                except ValueError:
+                    print("Valores invalidos tente novamente.")
+        
+                sql_upt = "UPDATE cliente SET {} = %s WHERE id_cliente = %s".format(coluna_a_editar)
+                valores_upt = (novo_valor_coluna, id_cliente)
+                cursor.execute(sql_upt, valores_upt)
+                connection.commit()
+                print("Valores alterados com sucesso. ")
+
+        except Exception as e:
+            print("Erro ao buscar os dados:", e)
+        finally:
+            connection.close()  
+
                 
 
 

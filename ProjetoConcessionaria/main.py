@@ -18,7 +18,8 @@ while True:
     print('5. Editar dados do Veiculo')
     print('6. adicionar cliente')
     print('7. Visulizar clientes')
-    print('8. Excluir cliente')
+    print('8. Editar dados do Cliente')
+    print('9. Excluir cliente')
     
     try:
         escolha = int(input('Digite a opção desejada: '))
@@ -38,6 +39,8 @@ while True:
         elif escolha ==7:
             Cliente.visualizar_clientes()
         elif escolha ==8:
+            Cliente.editar_cliente()
+        elif escolha ==9:
             Cliente.excluir_cliente()
         else:
             print("Opção invalida. Tente novamente")
