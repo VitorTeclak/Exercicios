@@ -23,28 +23,30 @@ while True:
     
     try:
         escolha = int(input('Digite a opção desejada: '))
-    
-        if escolha ==1:
-            veiculo.inserir_veiculo()
-        elif escolha ==2:
-            veiculo.visualizar_veiculos()
-        elif escolha ==3:
-            veiculo.remover_veiculo()
-        elif escolha ==4:
-            veiculo.vender_veiculo()
-        elif escolha ==5:
-            veiculo.editar_dados_veiculo()
-        elif escolha ==6:
-            Cliente.inserir_cliente()
-        elif escolha ==7:
-            Cliente.visualizar_clientes()
-        elif escolha ==8:
-            Cliente.editar_cliente()
-        elif escolha ==9:
-            Cliente.excluir_cliente()
-        else:
-            print("Opção invalida. Tente novamente")
 
-        input('digite Enter para continuar ...')
+        match escolha:
+            case 1:
+                veiculo.inserir_veiculo()
+            case 2:
+                veiculo.visualizar_veiculos()
+            case 3:
+                veiculo.remover_veiculo()
+            case 4:
+                veiculo.vender_veiculo()
+            case 5:
+                veiculo.editar_dados_veiculo()
+            case 6:
+                Cliente.inserir_cliente()
+            case 7:
+                Cliente.visualizar_clientes()
+            case 8:
+                Cliente.editar_cliente()
+            case 9:
+                Cliente.excluir_cliente()
+            case _:
+                print("Opção inválida. Tente novamente")
+
+        input('Digite Enter para continuar ...')
+
     except ValueError:
-        input("Valor invalido. Tente novamente.")
+        input("Valor inválido. Tente novamente.")
