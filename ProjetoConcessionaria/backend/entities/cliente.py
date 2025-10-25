@@ -1,7 +1,7 @@
 import os
 import pymysql
 from backend.config.database import Settings
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
 
 MYSQLALCHEMY_DATABASE_EXPERT_URL = Settings.DATABASEMYSQL_EXPERT_URL
 def clear():
@@ -80,27 +80,29 @@ class Cliente:
             connection.close()  
     
     @staticmethod
+    @staticmethod
     def visualizar_clientes():
         clear()
         cnn = create_engine(MYSQLALCHEMY_DATABASE_EXPERT_URL)
 
         try:
-            
-                query = ("""SELECT c.id_cliente, c.nome, c.cpf, c.idade, c.telefone, c.email, e.rua, e.numero, e.cep FROM cliente c
-                INNER JOIN endereco e ON c.id_endereco = e.id_endereco;""")
-                
-                resultados = (cnn, query)
+            query = text("""SELECT c.id_cliente, c.nome, c.cpf, c.idade, c.telefone, c.email, 
+                                e.rua, e.numero, e.cep 
+                            FROM cliente c
+                            INNER JOIN endereco e ON c.id_endereco = e.id_endereco;""")
 
-                print("ID | Nome | CPF | Idade | Telefone | Email | RUA | NUMERO| CEP")
-                print("-" * 70)
-                for linha in resultados:
-                    print(linha) 
+            # Conectando e executando a query
+            with cnn.connect() as connection:
+                resultados = connection.execute(query).fetchall()
+
+            print("ID | Nome | CPF | Idade | Telefone | Email | RUA | NUMERO | CEP")
+            print("-" * 90)
+            for linha in resultados:
+                print(" | ".join(str(valor) for valor in linha))
 
         except Exception as e:
             print("Erro ao buscar os dados:", e)
 
-        finally:
-            connection.close()  
     
     @staticmethod
     def excluir_cliente():
