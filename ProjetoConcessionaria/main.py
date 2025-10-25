@@ -1,7 +1,7 @@
 import os
 
-from entities.cliente import Cliente
-from entities.veiculo import veiculo
+from backend.entities.cliente import Cliente
+from backend.entities.veiculo import veiculo
 
 def clear():
     os.system('cls' if os.name == 'nt' else 'clear')  
