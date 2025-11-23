@@ -1,92 +1,95 @@
 import os
 import pymysql
+import polars as pl
 from backend.entities.cliente import Cliente
+from backend.config.database import Settings
+from sqlalchemy import create_engine, text
+from backend.auxiliar.formataQuery import formatarResultados
+MYSQLALCHEMY_DATABASE_EXPERT_URL = Settings.DATABASEMYSQL_EXPERT_URL
 def clear():
     os.system('cls' if os.name == 'nt' else 'clear')
 
-class veiculo:
-    def __init__(self, modelo, cor, ano, quilometragem, placa, valor, tipo):
-        self.modelo = modelo
-        self.cor = cor
-        self.ano = ano
-        self.quilometragem = quilometragem
-        self.placa = placa
-        self.valor = valor
-        self.tipo = tipo
 
+    
+
+
+    
+                
+
+
+class veiculo:
     @staticmethod
     def inserir_veiculo():
         clear()
         try:   
-            connection = pymysql.connect(
-                host="localhost",
-                user="root",
-                password="senha",
-                database="concessionaria",
-            )
-
-            with connection.cursor() as cursor:
-                while True:
-                    try:
-                        tipo = input("Digite o tipo do veiculo (CARRO/MOTO): ").upper()
-                        if tipo not in ["CARRO", "MOTO"]:
-                            print("Tipo de veiculo invalido.")
-                            continue  
-                       
-                        modelo_veiculo = input("Digite o modelo do veiculo: ").upper()
-                        cor = input("Digite a cor do veiculo: ").upper()
-                        ano = int(input("Digite o ano de fabricação do veiculo: "))
-                        quilometragem =input("Digite a quilometragem do veiculo: ")
-                        placa = input("Digite a placa do veiculo (Ex:AAA1111): ").upper()
-                        
-                        while True:
-                            valor_flt = float(input("Digite o valor do veiculo: "))
-                            if valor_flt == 0:
-                                print("O valor do veiculo não pode ser 0. Tente novamente")
-                            else: 
-                                break
-                        valor_str = f"{valor_flt:.3f}"
-                            
-                    except ValueError:
-                        print("Dados do veiculo inválidos. Tente novamente.")
-
-                    sql_veiculo = "INSERT INTO veiculo (tipo, modelo_veiculo, cor, ano_producao, quilometragem, placa, valor) VALUES (%s, %s, %s, %s, %s, %s, %s)"
-                    valores_veiculo = (tipo, modelo_veiculo, cor,  ano, quilometragem, placa, valor_str)
-                    cursor.execute(sql_veiculo, valores_veiculo)
-
-                    connection.commit()
-                    print("Dados inseridos com sucesso!")
+            
+            while True:
+                try:
+                    tipo = input("Digite o tipo do veiculo (CARRO/MOTO): ").upper()
+                    if tipo not in ["CARRO", "MOTO"]:
+                        print("Tipo de veiculo invalido.")
+                        continue  
+                    print(tipo)
+                    modelo_veiculo = input("Digite o modelo do veiculo: ").upper()
+                    cor = input("Digite a cor do veiculo: ").upper()
+                    ano = input("Digite o ano de fabricação do veiculo: ")
+                    quilometragem =input("Digite a quilometragem do veiculo: ")
+                    placa = input("Digite a placa do veiculo (Ex:AAA1111): ").upper()
+                    while True:
+                        valor_flt = float(input("Digite o valor do veiculo: "))
+                        if valor_flt == 0:
+                            print("O valor do veiculo não pode ser 0. Tente novamente")
+                        else:
+                            valor_str = f"{valor_flt:.2f}"
+                            break
                     break
+                        
+                except ValueError:
+                    print("Dados do veiculo inválidos. Tente novamente.")
 
+            cnn = create_engine(MYSQLALCHEMY_DATABASE_EXPERT_URL)
+
+            with cnn.begin() as conn:
+                result = conn.execute(
+                    text("""
+                    INSERT INTO veiculo (tipo, modelo_veiculo, cor, ano_producao, quilometragem, placa, valor)
+                    VALUES (:tipo, :modelo_veiculo, :cor, :ano_producao, :quilometragem, :placa, :valor)
+                """),
+                {   
+                    "tipo" : tipo,
+                    "modelo_veiculo": modelo_veiculo,
+                    "cor": cor,
+                    "ano_producao": ano,
+                    "quilometragem": quilometragem,
+                    "placa": placa,
+                    "valor" : valor_str
+                }
+            )
+                print("Veiculo inserido")
+            conn.commit()
 
         except Exception as e:
-            connection.rollback()
             print("Erro ao inserir dados:", e)
 
-        finally:
-            connection.close()  
 
     @staticmethod
     def visualizar_veiculos():
         clear()
-        connection = pymysql.connect(
-        host="localhost",
-        user="root",
-        password="senha",
-        database="concessionaria"
-)
-
         try:
-            with connection.cursor() as cursor:
-                cursor.execute("SELECT * FROM veiculo")
+            cnn = create_engine(MYSQLALCHEMY_DATABASE_EXPERT_URL)
+
+            with cnn.begin() as conn:
+                query = text("""
+                            SELECT 
+                                *
+                            FROM
+                                veiculo
+                            """)
                 
-                resultados = cursor.fetchall()
-
-                print("ID | Modelo | Ano | Quilometragem | Placa | Valor | Tipo | ID_CLIENTE_COMPRADOR")
-                print("-" * 70)
-                for linha in resultados:
-                    print(linha) 
-
+                with cnn.connect() as connection:
+                    resultados = connection.execute(query)
+                    formatarResultados(resultados)
+                
         except Exception as e:
             print("Erro ao buscar os dados:", e)
 
@@ -96,34 +99,52 @@ class veiculo:
     @staticmethod
     def remover_veiculo():
         clear()
-        connection = pymysql.connect(
-        host="localhost",
-        user="root",
-        password="senha",
-        database="concessionaria"
-)
+        cnn = create_engine(MYSQLALCHEMY_DATABASE_EXPERT_URL)
 
         try:
-            with connection.cursor() as cursor:
-                cursor.execute("SELECT * FROM veiculo")
-                
-                resultados = cursor.fetchall()
+            
+            query = text("""
+                            SELECT
+                                *
+                            FROM
+                                veiculo""")
 
-                print("ID | MODELO | ANO | QUIOMETRAGEM | PLACA | VALOR | TIPO")
-                print("-" * 70)
-                for linha in resultados:
-                    print(linha)
-                id = int(input("Digite o numero ID do veiculo que deseja remover: "))
+            # Conectando e executando a query
+            with cnn.begin() as conn:
+                resultados = conn.execute(query)
+                df = pl.read_database(query, cnn, infer_schema_length=10000)
+                
+
+                formatarResultados(resultados)
+                id = int(input("Digite o numero ID do veiculo que deseja excluir: "))
 
                 try:
                     escolha = input(f"Tem certeza que deseja excluir o veiculo, ID: {id} (S/N)").upper()
                     if escolha == ("S"):
 
+                        query = text(f"""
+                            SELECT COUNT(*) AS total
+                            FROM vendas
+                            WHERE id_veiculo = :id_veiculo
+                            """)
 
-                        sql_del = "DELETE FROM veiculo WHERE id_veiculo = %s"
-                        valores_del = (id)
-                        cursor.execute(sql_del, valores_del)
-                        connection.commit()
+                        resultado = conn.execute(query, {"id_veiculo": id})
+                        total = resultado.scalar()  
+
+                        if total != 0:
+                            print("Existe venda registrada no veiculo, por questões de regras da empresa o veiculo não pode ser removido")
+                            return
+                        result = conn.execute(
+                            text("""
+                                DELETE FROM 
+                                    veiculo
+                                WHERE 
+                                    id_veiculo = :id
+                            """),
+                            {"id": id}
+                            )
+                        conn.commit() 
+                        
                         print("veiculo removido com sucesso.")
                         input("Digite ENTER para continuar.")
                     elif escolha == ("N"):
@@ -134,37 +155,40 @@ class veiculo:
         except Exception as e:
             print("Erro ao buscar os dados:", e)
 
-        finally:
-            connection.close()  
+
     
     @staticmethod
-    def vender_veiculo():
+    def vender_veiculo(id_funcionario):
         clear()
-        connection = pymysql.connect(
-        host="localhost",
-        user="root",
-        password="senha",
-        database="concessionaria")
+        cnn = create_engine(MYSQLALCHEMY_DATABASE_EXPERT_URL)
         try:
-            with connection.cursor() as cursor:
-                cursor.execute("SELECT id_veiculo, modelo_veiculo, placa, tipo FROM veiculo")
-                resultados_veiculos = cursor.fetchall()
+            
+            query = text("""
+                            SELECT id_veiculo, modelo_veiculo, placa, tipo FROM veiculo
+                        """)
 
-                print("ID | MODELO | PLACA | TIPO")
-                print("-" * 70)
-                for linha in resultados_veiculos:
-                    print(linha)
+            # Conectando e executando a query
+            with cnn.begin() as conn:
+                resultados = conn.execute(query)
+                df = pl.read_database(query, cnn, infer_schema_length=10000)
+                formatarResultados(resultados)
+
                 try:
                     id_veiculo = int(input("Digite o numero ID do veiculo que deseja vender: "))
                 except ValueError:
                     print("Id veiculo invalido.")
                     
-                cursor.execute("SELECT id_cliente, nome, email FROM cliente")
-                resultados_cliente = cursor.fetchall()
-                print("ID CLIENTE | NOME| EMAIL")
-                print("-" * 70)
-                for linha in resultados_cliente:
-                    print(linha)
+                query = text("""
+                            SELECT 
+                             *
+
+                            FROM pessoa
+
+                        """)
+
+                resultados = conn.execute(query)
+                df = pl.read_database(query, cnn, infer_schema_length=10000)
+                formatarResultados(resultados)
                 try: 
                     id_cliente = int(input("Digite o id no cliente que ira comprar o carro: "))
                 except ValueError:
@@ -173,10 +197,20 @@ class veiculo:
                 try:
                     escolha = input(f"Tem certeza que deseja vender o veiculo, ID: {id_veiculo} para o cliente ID: {id_cliente} (S/N)").upper()
                     if escolha == ("S"):
-                        sql_upt = "UPDATE veiculo SET id_cliente = %s WHERE id_veiculo = %s;"
-                        valores_upt = (id_cliente, id_veiculo)
-                        cursor.execute(sql_upt, valores_upt)
-                        connection.commit()
+                        result = conn.execute(
+                            text("""
+                                    INSERT INTO vendas 
+                                        (id_funcionario, id_pessoa, id_veiculo)
+                                    VALUES
+                                        (:id_funcionario, :id_pessoa, :id_veiculo)"""),
+                                        {
+                                            "id_funcionario" : id_funcionario,
+                                            "id_pessoa" : id_cliente,
+                                            "id_veiculo" : id_veiculo
+                                            
+                                        }
+                        )
+                        conn.commit()    
                         print("veiculo vendido com sucesso.")
                         input("Digite ENTER para continuar.")
                     elif escolha == ("N"):
@@ -195,19 +229,14 @@ class veiculo:
     def editar_dados_veiculo():
         clear()
         
-        connection = pymysql.connect(
-        host="localhost",
-        user="root",
-        password="senha",
-        database="concessionaria")
+        cnn = create_engine(MYSQLALCHEMY_DATABASE_EXPERT_URL)
         try:
-            with connection.cursor() as cursor:
-                cursor.execute("SELECT id_veiculo, modelo_veiculo, cor, ano_producao, placa, valor, tipo FROM veiculo")
-                resultados_cliente = cursor.fetchall()
-                print("ID_VEICULO | MODELO_VEICULO | COR | ANO_PRODUCAO | PLACA | VALOR | TIPO")
-                print("-" * 70)
-                for linha in resultados_cliente:
-                    print(linha)    
+            query = text(("SELECT id_veiculo, modelo_veiculo, cor, ano_producao, placa, valor, tipo FROM veiculo"))
+            with cnn.begin() as conn:
+                resultados = conn.execute(query)
+                df = pl.read_database(query, cnn, infer_schema_length=10000)
+                
+                formatarResultados(resultados)
                 try:
                     id_veiculo = int(input("Digite o ID do veiculo que deseja editar: "))
                 except ValueError:
@@ -219,23 +248,24 @@ class veiculo:
                     colunas_validas = ["modelo_veiculo", "cor", "ano_producao", "quilometragem", "placa", "valor", "tipo"]
                     if coluna_a_editar not in colunas_validas:
                         print("Opção digitada não esta valida no banco de dados.")
-                    if coluna_a_editar == "ano_producao":
-                        novo_valor_coluna = int(input("Digite a coluna que deseja editar: "))
-                    else:
-                        novo_valor_coluna = input("Digite o novo valor: ").upper()
+                    novo_valor_coluna = input("Digite o novo valor: ").upper()
                     
                 except ValueError:
                     print("Valores invalidos tente novamente.")
         
-                sql_upt = "UPDATE veiculo SET {} = %s WHERE id_veiculo = %s".format(coluna_a_editar)
-                valores_upt = (novo_valor_coluna, id_veiculo)
-                cursor.execute(sql_upt, valores_upt)
-                connection.commit()
+                query = text(f"""
+                    UPDATE veiculo
+                    SET {coluna_a_editar} = :novo_valor
+                    WHERE id_veiculo = :id_veiculo
+                """)
+
+                with cnn.connect() as conn:
+                    conn.execute(query, {"novo_valor": novo_valor_coluna, "id_veiculo": id_veiculo})
+                    conn.commit() 
                 print("Valores alterados com sucesso. ")
 
         except Exception as e:
             print("Erro ao buscar os dados:", e)
-        finally:
-            connection.close()  
+
     
     
