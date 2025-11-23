@@ -9,51 +9,51 @@ O sistema funciona via CLI (linha de comando) e conta com uma API REST para oper
 
 📌 Funcionalidades do Sistema
 ✅ Módulos principais (CLI)
+<ul>
+<li>Cadastro de veículos</li>
 
-Cadastro de veículos
+<li>Visualização de veículos</li>
 
-Visualização de veículos
+<li>Remoção de veículos</li>
 
-Remoção de veículos
+<li>Edição de veículos</li>
 
-Edição de veículos
+<li>Venda de veículos</li>
 
-Venda de veículos
+<li>Cadastro de clientes</li>
 
-Cadastro de clientes
+<li>Visualização de clientes</li>
 
-Visualização de clientes
+<li>Edição de clientes</li>
 
-Edição de clientes
-
-Exclusão de clientes
-
+<li>Exclusão de clientes</li>
+</ul>
 ✅ API REST (FastAPI)
+<ul>
+<li>Atualmente implementado:</li>
 
-Atualmente implementado:
+<li>Login com senha hash (bcrypt)</li>
 
-Login com senha hash (bcrypt)
+<li>Retorno do nível de acesso do funcionário</li>
 
-Retorno do nível de acesso do funcionário
+<li>Endpoints localizados em:
+backend/api/controllers.py</li>
+</ul>
+<p>🛢 Banco de Dados (MySQL)</p>
 
-Endpoints localizados em:
-backend/api/controllers.py
+<p>O banco segue um modelo simples, com tabelas como:</p>
 
-🛢 Banco de Dados (MySQL)
+<li>cliente</li>
 
-O banco segue um modelo simples, com tabelas como:
+<li>funcionario</li>
 
-cliente
+<li>veiculo</li>
 
-funcionario
+<li>vendas</li>
 
-veiculo
+<li>pessoa</li>
 
-vendas
-
-pessoa
-
-Todas as tabelas e FKs estão definidas no arquivo:
+<p>Todas as tabelas e FKs estão definidas no arquivo:</p>
 
 📄 codigoMysql/codigo.sql
 
