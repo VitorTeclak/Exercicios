@@ -70,3 +70,64 @@ Busca o hash no banco
 Usa bcrypt.checkpw() para validação
 
 Retorna o nível de acesso do funcionário
+
+<h4>Design da Arquitetura</h4>
+<p>Camada CLI<>/p
+<ul>
+<li>Implementa o menu principal (main.py)</li>
+
+<li>Realiza solicitações ao usuário</li>
+
+<li>Faz leitura e escrita no banco via SQLAlchemy</li>
+
+<li>Para login, comunica-se com a API REST usando requests</li>
+</ul>
+<h4>Camada de Entidades</h4>
+Localizada em /entities/
+Define modelos lógicos que representam os objetos do sistema, como:
+🧩 cliente.py
+Armazena dados básicos do cliente utilizados durante operações de CRUD.
+🚗 veiculo.py
+Representa um veículo cadastrado no sistema.
+Essas classes oferecem apenas a estrutura e identidade dos objetos — operações pesadas são feitas diretamente nas funções do CLI.
+<h4>Camada de API (FastAPI)</h4>
+Local: /backend/api/controllers.py
+A API contém:
+🔐 Endpoint de Login
+<ul>
+<li>Recebe login e senha via JSON</li>
+
+<li>Busca o hash do usuário no banco</li>
+
+<li>Usa bcrypt.checkpw() para validar</li>
+
+<li>Retorna:</li>
+<ul>
+<li>nível de acesso (int) em caso de sucesso</li>
+
+<li>erro em caso de falha</li>
+</ul>
+</ul>
+<h4>Dependências</h4>
+CLI:
+<ul>
+<li>pymysql</li>
+
+<li>requests</li>
+
+<li>dotenv</li>
+
+<li>bcrypt</li>
+
+<li>SQLAlchemy</li>
+</ul>
+
+API:
+<ul>
+<li>fastapi</li>
+
+<li>uvicorn</li>
+
+<li>sqlalchemy</li>
+
+<li>bcrypt</li>
