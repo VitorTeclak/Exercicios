@@ -72,7 +72,7 @@ Usa bcrypt.checkpw() para validação
 Retorna o nível de acesso do funcionário
 
 <h4>Design da Arquitetura</h4>
-<p>Camada CLI<>/p
+<p>Camada CLI</p>
 <ul>
 <li>Implementa o menu principal (main.py)</li>
 
@@ -85,11 +85,11 @@ Retorna o nível de acesso do funcionário
 <h4>Camada de Entidades</h4>
 Localizada em /entities/
 Define modelos lógicos que representam os objetos do sistema, como:
-🧩 cliente.py
-Armazena dados básicos do cliente utilizados durante operações de CRUD.
-🚗 veiculo.py
-Representa um veículo cadastrado no sistema.
-Essas classes oferecem apenas a estrutura e identidade dos objetos — operações pesadas são feitas diretamente nas funções do CLI.
+<p>🧩 cliente.py</p>
+<p>Armazena dados básicos do cliente utilizados durante operações de CRUD.</p>
+<p>🚗 veiculo.py</p>
+<p>Representa um veículo cadastrado no sistema.</p>
+<p>Essas classes oferecem apenas a estrutura e identidade dos objetos — operações pesadas são feitas diretamente nas funções do CLI.</p>
 <h4>Camada de API (FastAPI)</h4>
 Local: /backend/api/controllers.py
 A API contém:
