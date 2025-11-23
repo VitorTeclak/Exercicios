@@ -1,11 +1,14 @@
 import os
 import pymysql
+import polars as pl
 from backend.config.database import Settings
 from sqlalchemy import create_engine, text
-
+from backend.auxiliar.formataQuery import formatarResultados
 MYSQLALCHEMY_DATABASE_EXPERT_URL = Settings.DATABASEMYSQL_EXPERT_URL
 def clear():
     os.system('cls' if os.name == 'nt' else 'clear')
+
+
 
 class endereco:
     def __init__ (self, rua,numero, cep, bairro ):
@@ -15,91 +18,101 @@ class endereco:
         self.bairro = bairro
         
 class Cliente:
-    def __init__(self, nome, cpf, idade, telefone, email, endereco):
-        self.nome = nome
-        self.cpf = cpf
-        self.idade = idade
-        self.telefone = telefone
-        self.email = email
-        self.endereco = endereco
-
     @staticmethod
     def inserir_cliente():
         clear()
         try:
-            
-            connection = pymysql.connect(
-                host="localhost",
-                user="root",
-                password="senha",
-                database="concessionaria",
-            )
 
-            with connection.cursor() as cursor:
-                while True:
-                    try:
-                        rua = input("Digite a rua do cliente: ")
-                        numero = int(input("Digite o número da casa do cliente: "))
-                        cep = input("Digite o CEP do cliente: ")
-                        bairro = input("Digite o bairro do cliente: ")
-                        complemento = input("Observação/complemento de endereço: ")
-                        break
-                    except ValueError:
-                        print("Valores de endereço inválidos. Tente novamente.")
+            while True:
+                try:
+                    rua = input("Digite a rua do cliente: ")
+                    numero = int(input("Digite o número da casa do cliente: "))
+                    cep = input("Digite o CEP do cliente: ")
+                    bairro = input("Digite o bairro do cliente: ")
+                    complemento = input("Observação/complemento de endereço: ")
+                except ValueError:
+                    print("Valores de endereço inválidos. Tente novamente.")
 
-                while True:
-                    try:
-                        nome = input("Digite o nome do cliente: ")
-                        cpf = input("Digite o CPF do cliente: ")
-                        idade = int(input("Digite a idade do cliente: "))
-                        telefone = input("Digite o telefone do cliente: ")
-                        email = input("Digite o email do cliente: ")
-                        break
-                    except ValueError:
-                        print("Dados do cliente inválidos. Tente novamente.")
+                try:
+                    nome = input("Digite o nome do cliente: ")
+                    cpf = input("Digite o CPF do cliente: ")
+                    idade = int(input("Digite a idade do cliente: "))
+                    telefone = input("Digite o telefone do cliente: ")
+                    email = input("Digite o email do cliente: ")
+                    break
+                except ValueError:
+                    print("Dados do cliente inválidos. Tente novamente.")
 
-                sql_endereco = "INSERT INTO endereco (rua, numero, cep, bairro, complemento) VALUES (%s, %s, %s, %s, %s)"
-                valores_endereco = (rua, numero, cep, bairro, complemento)
-                cursor.execute(sql_endereco, valores_endereco)
+            cnn = create_engine(MYSQLALCHEMY_DATABASE_EXPERT_URL)
 
- 
-                id_endereco = cursor.lastrowid
+            with cnn.connect() as conn:
+                result = conn.execute(
+                    text("""
+                        INSERT INTO endereco (rua, numero, cep, bairro, complemento)
+                        VALUES (:rua, :numero, :cep, :bairro, :complemento)
+                    """),
+                    {
+                        "rua": rua,
+                        "numero": numero,
+                        "cep": cep,
+                        "bairro": bairro,
+                        "complemento": complemento
+                    }
+                )
+                conn.commit()
+                id_endereco = result.lastrowid
 
-                sql_cliente = "INSERT INTO cliente (nome, cpf, idade, telefone, email, id_endereco) VALUES (%s, %s, %s, %s, %s, %s)"
-                valores_cliente = (nome, cpf, idade, telefone, email, id_endereco)
-                cursor.execute(sql_cliente, valores_cliente)
-
-                connection.commit()
-                print("Dados inseridos com sucesso!")
+                result = conn.execute(
+                    text("""
+                            INSERT INTO pessoa 
+                                (nome, cpf, idade, telefone, email, id_endereco)
+                            VALUES
+                                (:nome, :cpf, :idade, :telefone, :email, :id_endereco)"""),
+                                {
+                                    "nome" : nome,
+                                    "cpf" : cpf,
+                                    "idade" : idade,
+                                    "telefone" : telefone,
+                                    "email" : email,
+                                    "id_endereco" : id_endereco
+                                }
+                )
+                conn.commit()    
+            print("Dados inseridos com sucesso!")
+            return result
 
         except Exception as e:
-            connection.rollback()
+            
             print("Erro ao inserir dados:", e)
 
-        finally:
-            connection.close()  
+
     
-    @staticmethod
+
     @staticmethod
     def visualizar_clientes():
         clear()
         cnn = create_engine(MYSQLALCHEMY_DATABASE_EXPERT_URL)
 
         try:
-            query = text("""SELECT c.id_cliente, c.nome, c.cpf, c.idade, c.telefone, c.email, 
-                                e.rua, e.numero, e.cep 
-                            FROM cliente c
-                            INNER JOIN endereco e ON c.id_endereco = e.id_endereco;""")
+            query = text("""SELECT 
+                                p.id_pessoa, 
+                                p.nome, 
+                                p.cpf, 
+                                p.idade, 
+                                p.telefone, 
+                                p.email, 
+                                e.rua, 
+                                e.numero, 
+                                e.cep 
+                            FROM pessoa p
+                            INNER JOIN 
+                                endereco e ON p.id_endereco = e.id_endereco;""")
 
             # Conectando e executando a query
             with cnn.connect() as connection:
-                resultados = connection.execute(query).fetchall()
-
-            print("ID | Nome | CPF | Idade | Telefone | Email | RUA | NUMERO | CEP")
-            print("-" * 90)
-            for linha in resultados:
-                print(" | ".join(str(valor) for valor in linha))
-
+                resultados = connection.execute(query)
+                formatarResultados(resultados)
+                
         except Exception as e:
             print("Erro ao buscar os dados:", e)
 
@@ -107,34 +120,78 @@ class Cliente:
     @staticmethod
     def excluir_cliente():
         clear()
-        connection = pymysql.connect(
-        host="localhost",
-        user="root",
-        password="senha",
-        database="concessionaria"
-)
+        cnn = create_engine(MYSQLALCHEMY_DATABASE_EXPERT_URL)
 
         try:
-            with connection.cursor() as cursor:
-                cursor.execute("SELECT * FROM cliente")
-                
-                resultados = cursor.fetchall()
+            
+            query = text("""
+                            SELECT
+                                id_pessoa,
+                                nome,
+                                cpf,
+                                id_endereco
+                            FROM
+                                pessoa""")
 
-                print("ID | Nome | CPF | Idade | Telefone | Email | ID Endereço")
-                print("-" * 70)
-                for linha in resultados:
-                    print(linha)
+            # Conectando e executando a query
+            with cnn.begin() as conn:
+                resultados = conn.execute(query)
+                df = pl.read_database(query, cnn, infer_schema_length=10000)
+                
+
+                formatarResultados(resultados)
                 id = int(input("Digite o numero ID do cliente que deseja remover: "))
 
                 try:
                     escolha = input(f"Tem certeza que deseja excluir o cliente ID: {id} (S/N)").upper()
                     if escolha == ("S"):
+                        
+                            
+                            
+                        print(df)
+                        df_filtrado = df.filter(pl.col("id_pessoa") == id)
+                        id_endereco = df_filtrado.select("id_endereco")[0, 0]  
+
+                        query = text(f"""
+                            SELECT COUNT(*) AS total
+                            FROM vendas
+                            WHERE id_cliente = :id_cliente
+                            """)
+
+                        resultado = conn.execute(query, {"id_cliente": id})
+                        total = resultado.scalar()  
+
+                        if total != 0:
+                            print("Existe venda registrada no cliente, por questões de regras da empresa o cliente não pode ser removido")
+                            return
+                        
+                        result = conn.execute(
+                            text("""
+                                DELETE FROM 
+                                    pessoa
+                                WHERE 
+                                    id_pessoa = :id
+                            """),
+                            {"id": id}
+                            )
+                        conn.commit() 
+
+                        result = conn.execute(
+                            text("""
+                                DELETE FROM
+                                    endereco
+                                WHERE
+                                    id_endereco = :id_endereco
+                                """),
+                                {"id_endereco": id_endereco}
+                        )
+                        conn.commit()
+
+                                
+                                
 
 
-                        sql_del = "DELETE FROM cliente WHERE id_cliente = %s"
-                        valores_del = (id)
-                        cursor.execute(sql_del, valores_del)
-                        connection.commit()
+                        cnn.execute(query)
                         print("Cliente removido com sucesso.")
                         input("Digite ENTER para continuar.")
                     elif escolha == ("N"):
@@ -145,47 +202,45 @@ class Cliente:
         except Exception as e:
             print("Erro ao buscar os dados:", e)
 
-        finally:
-            connection.close()  
-
     @staticmethod
     def editar_cliente():
         cnn = create_engine(MYSQLALCHEMY_DATABASE_EXPERT_URL)
         try:
             
-            query = ("SELECT id_cliente, nome, cpf, idade, telefone, email FROM cliente")
-            resultados_cliente = (cnn, query)
-            print("ID CLIENTE | NOME | CPF | IDADE | TELEFONE | EMAIL")
-            print("-" * 70)
-            for linha in resultados_cliente:
-                print(linha)    
-            try:
-                id_cliente = int(input("Digite o ID do veiculo que deseja editar: "))
-            except ValueError:
-                print("Id invalido.")
-            try:
-                print("NOME | CPF | IDADE | TELEFONE | EMAIL")
-                print("OBS: Digite exatamente igual.")
-                coluna_a_editar = input("Digite a coluna que deseja editar: ").lower()
-                colunas_validas = ["id_cliente", "nome", "cpf", "idade", "telefone", "email"]
-                if coluna_a_editar not in colunas_validas:
-                    print("Opção digitada não esta valida no banco de dados.")
-                novo_valor_coluna = input("Digite o novo valor: ").upper()
-                
-            except ValueError:
-                print("Valores invalidos tente novamente.")
+            query = text("SELECT id_pessoa as id_cliente, nome, cpf, idade, telefone, email FROM pessoa")
+            with cnn.connect() as conn:
+                resultados = conn.execute(query)
+                formatarResultados(resultados)
+                try:
+                    id_cliente = int(input("Digite o ID do veiculo que deseja editar: "))
+                except ValueError:
+                    print("Id invalido.")
+                try:
+                    print("NOME | CPF | IDADE | TELEFONE | EMAIL")
+                    print("OBS: Digite exatamente igual.")
+                    coluna_a_editar = input("Digite a coluna que deseja editar: ").lower()
+                    colunas_validas = ["id_cliente", "nome", "cpf", "idade", "telefone", "email"]
+                    if coluna_a_editar not in colunas_validas:
+                        print("Opção digitada não esta valida no banco de dados.")
+                        return
+                    novo_valor_coluna = input("Digite o novo valor: ").upper()
+                    
+                except ValueError:
+                    print("Valores invalidos tente novamente.")
     
-            sql_upt = "UPDATE cliente SET {} = %s WHERE id_cliente = %s".format(coluna_a_editar)
-            valores_upt = (novo_valor_coluna, id_cliente)
-            # cursor.execute(sql_upt, valores_upt)
-            # connection.commit()
-            # print("Valores alterados com sucesso. ")
+                query = text(f"""
+                    UPDATE pessoa
+                    SET {coluna_a_editar} = :novo_valor
+                    WHERE id_pessoa = :id_pessoa
+                """)
 
+                with cnn.connect() as conn:
+                    conn.execute(query, {"novo_valor": novo_valor_coluna, "id_pessoa": id_cliente})
+                    conn.commit() 
+                print("Valores Atualizados")
         except Exception as e:
             print("Erro ao buscar os dados:", e)
 
-if __name__ == '__main__':
-    editar_cliente()
     
 
 

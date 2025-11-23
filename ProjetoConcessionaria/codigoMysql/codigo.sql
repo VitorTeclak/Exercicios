@@ -31,8 +31,8 @@ CREATE TABLE cliente (
 CREATE TABLE funcionario (
     id_funcionario INT PRIMARY KEY AUTO_INCREMENT,
     id_pessoa INT NOT NULL,
-    cargo ENUM('Vendedor','Supervisor_de_vendas','Gerente','RH'),
-    nivel_acesso INT,
+    cargo ENUM('Vendedor','Supervisor_de_vendas','Gerente','RH') NOT NULL,
+    nivel_acesso  NOT NULL,
     FOREIGN KEY (id_pessoa) REFERENCES pessoa(id_pessoa)
 );
 
